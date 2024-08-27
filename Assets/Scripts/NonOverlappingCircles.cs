@@ -4,6 +4,7 @@ using UnityEngine;
 public class NonOverlappingCircles : MonoBehaviour
 {
 	public float circleRadius = 10f; // Radius of the circular area
+	public Vector3 area = new Vector3(1, 1, 1);
 	public float pointRadius = 0.1f; // Radius of each point
 	public int numberOfPoints = 20;  // Number of points to generate
 
@@ -66,6 +67,7 @@ public class NonOverlappingCircles : MonoBehaviour
 	{
 		Gizmos.color = Color.green;
 
-		Gizmos.DrawWireSphere(transform.position, circleRadius);
+		//Gizmos.DrawWireSphere(transform.position, circleRadius);
+		Gizmos.DrawWireCube(transform.position, area);
 	}
 }

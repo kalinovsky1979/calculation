@@ -9,8 +9,11 @@ public class RandomList<T>
 	private int _lastNumber = -1;
 	private int _secondLastNumber = -1;
 
-	public RandomList(T[] clips)
+	private readonly bool _canRepeatTwice;
+
+	public RandomList(T[] clips, bool canRepeatTwice = true)
 	{
+		_canRepeatTwice = canRepeatTwice;
 		list.Clear();
 		list.AddRange(clips);
 	}
@@ -22,10 +25,22 @@ public class RandomList<T>
 		if(list.Count == 1) return list[0];
 
 		int nextNumber;
-		do
+
+		if (_canRepeatTwice)
 		{
-			nextNumber = Random.Range(0, list.Count);
-		} while (nextNumber == _lastNumber && nextNumber == _secondLastNumber);
+			do
+			{
+				nextNumber = Random.Range(0, list.Count);
+			} while (nextNumber == _lastNumber && nextNumber == _secondLastNumber);
+		}
+		else
+		{
+			do
+			{
+				nextNumber = Random.Range(0, list.Count);
+			} while (nextNumber == _lastNumber);
+		}
+
 
 		_secondLastNumber = _lastNumber;
 		_lastNumber = nextNumber;
