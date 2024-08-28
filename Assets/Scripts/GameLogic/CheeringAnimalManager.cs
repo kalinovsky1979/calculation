@@ -26,4 +26,18 @@ public class CheeringAnimalManager : MonoBehaviour
 	{
 		yield return StartCoroutine(cheeringAnimalCurrent.MoveCoroutine(basePoint.position));
 	}
+
+	public IEnumerator Cheer()
+	{
+		yield return StartCoroutine(cheeringAnimalCurrent.CheerUpCoroutine());
+	}
+
+	void OnDrawGizmos()
+	{
+		Gizmos.color = Color.red;
+		Gizmos.DrawSphere(basePoint.position, 0.5f);
+
+		Gizmos.color = Color.green;
+		Gizmos.DrawSphere(playPoint.position, 0.5f);
+	}
 }

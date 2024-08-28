@@ -8,8 +8,6 @@ using UnityEngine;
  */
 public class GameManager : MonoBehaviour, IGameManager
 {
-	[SerializeField] private Transform animalRespPoint;
-	[SerializeField] private Transform animalMainPoint;
 	[SerializeField] private CheeringAnimalManager cheeringAnimalManager;
 
 	[SerializeField] private QuestManager questManager;
@@ -31,6 +29,8 @@ public class GameManager : MonoBehaviour, IGameManager
 
 		_questManager = questManager;
 		_questManager.ToysAppeared += _questManager_ToysAppeared;
+
+		StartCoroutine(cheeringAnimalManager.Arrive());
 	}
 
 	private void _questManager_ToysAppeared(object sender, EventArgs e)
@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour, IGameManager
 		if(readyToAnswer && e == _questManager.NumberCurrent)
 		{
 			readyToAnswer = false;
+			StartCoroutine(cheeringAnimalManager.Cheer());
 			StartCoroutine(_questManager.NextNumberCoroutine());
 		}
 	}

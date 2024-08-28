@@ -27,7 +27,7 @@ Material:
   m_ValidKeywords:
   - _EMISSION
   m_InvalidKeywords: []
-  m_LightmapFlags: 1
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -129,8 +129,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.20595038, g: 0.50079596, b: 0.9866691, a: 1}
-    - _Color: {r: 0.20595035, g: 0.50079596, b: 0.9866691, a: 1}
-    - _EmissionColor: {r: 0.10496743, g: 0.64433587, b: 2.9098256, a: 3}
+    - _BaseColor: {r: 0, g: 0.08296197, b: 0.22012573, a: 1}
+    - _Color: {r: 0, g: 0.08296194, b: 0.2201257, a: 1}
+    - _EmissionColor: {r: 0, g: 0.16731313, b: 0.8551546, a: 3}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

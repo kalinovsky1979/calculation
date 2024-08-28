@@ -6,18 +6,33 @@ using UnityEngine;
 public class CheeringAnimal : MonoBehaviour, ICheeringAnimal
 {
 	[SerializeField] private Animator animator;
+	[SerializeField] private float speed = 4;
+	[SerializeField] private float rotationSpeed = 2;
 
 	RotateAndGoSection moving;
 
 	private void Awake()
 	{
 		moving = new RotateAndGoSection(transform);
+
+		moving.OnStartRotation = () =>
+		{
+			animator.SetTrigger("run");
+		};
+
+		moving.OnEndLinear = () =>
+		{
+			animator.SetTrigger("idle");
+		};
+
+		moving.Speed = speed;
 	}
 
 	public IEnumerator CheerUpCoroutine()
 	{
-
-		yield return null;
+		animator.SetTrigger("cheer1");
+		yield return new WaitForSeconds(1.5f);
+		animator.SetTrigger("idle");
 	}
 
 	public IEnumerator MoveCoroutine(Vector3 toPoint)
@@ -32,4 +47,5 @@ public class CheeringAnimal : MonoBehaviour, ICheeringAnimal
 public interface ICheeringAnimal
 {
 	IEnumerator MoveCoroutine(Vector3 toPoint);
+	IEnumerator CheerUpCoroutine();
 }
