@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e9ade0d7f2a3f574e9d868bbd7e3819f
+guid: 611b799b03b87674095dcf1530d4d2cc
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Kid Games
+  - Childo
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

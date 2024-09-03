@@ -14,7 +14,7 @@ public class CheeringAnimalManager : MonoBehaviour
 	private void Awake()
 	{
 		cheeringAnimalRandomList = new RandomList<CheeringAnimal>(animals);
-		cheeringAnimalCurrent = Instantiate(cheeringAnimalRandomList.Next(), basePoint);
+		cheeringAnimalCurrent = Instantiate(cheeringAnimalRandomList.Next(), basePoint.position, Quaternion.identity);
 	}
 
 	public IEnumerator Arrive()
@@ -27,9 +27,9 @@ public class CheeringAnimalManager : MonoBehaviour
 		yield return StartCoroutine(cheeringAnimalCurrent.MoveCoroutine(basePoint.position));
 	}
 
-	public IEnumerator Cheer()
+	public IEnumerator Cheer(string txt)
 	{
-		yield return StartCoroutine(cheeringAnimalCurrent.CheerUpCoroutine());
+		yield return StartCoroutine(cheeringAnimalCurrent.CheerUpCoroutine(txt));
 	}
 
 	void OnDrawGizmos()

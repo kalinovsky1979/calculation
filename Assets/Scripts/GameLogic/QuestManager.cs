@@ -12,34 +12,78 @@ public class QuestManager : MonoBehaviour, IQuestManager
 
 	public event EventHandler ToysAppeared;
 
+	public bool MatricesAreOver => _matricesAreOver;
+	private bool _matricesAreOver = false;
+
 	private RandomList<GameObject> _toysRandomList;
+	private Queue<ToysMatrix> _toysQueueList;
 
 	public int NumberCurrent => _toyMatrixCurrent == null ? -1 : _toyMatrixCurrent.NumberName;
-	private RandomList<ToysMatrix> randomListToysMatrix;
+	//private RandomList<ToysMatrix> randomListToysMatrix;
 	private ToysMatrix _toyMatrixCurrent;
+
+	//private void printItems(ToysMatrix[] m)
+	//{
+	//	string s = "";
+
+	//	foreach (var item in m)
+	//	{
+	//		s += item.NumberName.ToString() + ",";
+	//	}
+
+	//	Debug.Log(s);
+	//}
 
 	public IEnumerator NextNumberCoroutine()
 	{
+		//printItems(_toysQueueList.ToArray());
+
+		if (_toysQueueList.Count == 0)
+		{
+			_matricesAreOver = true;
+			if (_toyMatrixCurrent != null)
+			{
+				yield return StartCoroutine(_toyMatrixCurrent.DisappearToysCoroutine());
+				Destroy(_toyMatrixCurrent.gameObject);
+			}
+			yield break;
+		}
+
 		if(_toyMatrixCurrent != null)
 		{
 			yield return StartCoroutine(_toyMatrixCurrent.DisappearToysCoroutine());
 			Destroy(_toyMatrixCurrent.gameObject);
 		}
 
-		_toyMatrixCurrent = Instantiate(randomListToysMatrix.Next(), toysMatrixPoint);
+		_toyMatrixCurrent = Instantiate(_toysQueueList.Dequeue(), toysMatrixPoint);
 
 		yield return StartCoroutine(_toyMatrixCurrent.AppearToysCoroutine(_toysRandomList.Next()));
 
 		ToysAppeared?.Invoke(this, EventArgs.Empty);
 	}
 
-	// Start is called before the first frame update
-	void Start()
+	private void Awake()
 	{
-		randomListToysMatrix = new RandomList<ToysMatrix>(toysMatrices, false);
 		_toysRandomList = new RandomList<GameObject>(toys, false);
+		var _m = new List<ToysMatrix>(toysMatrices).ToArray();
 
-		StartCoroutine(NextNumberCoroutine());
+		ShuffleArray(_m);
+		_toysQueueList = new Queue<ToysMatrix>(_m);
+	}
+
+	// Method to shuffle an array using the Fisher-Yates shuffle algorithm
+	private void ShuffleArray<T>(T[] array)
+	{
+		System.Random rng = new System.Random();
+		int n = array.Length;
+		while (n > 1)
+		{
+			n--;
+			int k = rng.Next(n + 1);
+			T value = array[k];
+			array[k] = array[n];
+			array[n] = value;
+		}
 	}
 }
 
@@ -47,5 +91,6 @@ public interface IQuestManager
 {
 	event EventHandler ToysAppeared;
 	IEnumerator NextNumberCoroutine();
-	int NumberCurrent {  get; }
+	int NumberCurrent { get; }
+	bool MatricesAreOver { get; }
 }

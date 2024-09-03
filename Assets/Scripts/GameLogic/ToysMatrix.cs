@@ -15,6 +15,8 @@ public class ToysMatrix : MonoBehaviour
 
 	public IEnumerator AppearToysCoroutine(GameObject toy)
 	{
+		if(points.Length == 0) yield break;
+
 		ClearToys();
 
 		if(instantiatedToys == null) instantiatedToys = new List<GameObject>();
@@ -63,6 +65,8 @@ public class ToysMatrix : MonoBehaviour
 
 	public IEnumerator DisappearToysCoroutine()
 	{
+		if (points.Length == 0) yield break;
+
 		animateToyScale.valueA = toy.transform.localScale;
 		animateToyScale.valueB = new Vector3(0, 0, 0);
 		animateToyScale.duration = 0.3f;
@@ -76,6 +80,7 @@ public class ToysMatrix : MonoBehaviour
 	private void OnDrawGizmos()
 	{
 		if(points == null) return;
+		if (points.Length == 0) return;
 
 		Gizmos.color = Color.yellow;
 

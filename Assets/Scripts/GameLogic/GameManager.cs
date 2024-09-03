@@ -16,7 +16,14 @@ public class GameManager : MonoBehaviour, IGameManager
 	[SerializeField] private AnswerNumberButtonManager answerNumberButtonManager;
 	private IAnswerNumberButtonManager _answerNumberButtonManager;
 
+	public event EventHandler GameOver;
+
 	private bool readyToAnswer = true;
+
+	private Dictionary<int, string> _numbers = new Dictionary<int, string> {
+		{ 0, "zero" }, { 1, "one" }, { 2, "two" }, { 3, "three" }, { 4, "four" }, { 5, "five" },
+		{ 6, "six" }, { 7, "seven" }, { 8, "eight" }, { 9, "nine" }
+	};
 
 	private void Start()
 	{
@@ -30,7 +37,15 @@ public class GameManager : MonoBehaviour, IGameManager
 		_questManager = questManager;
 		_questManager.ToysAppeared += _questManager_ToysAppeared;
 
-		StartCoroutine(cheeringAnimalManager.Arrive());
+		StartCoroutine(preStart());
+	}
+
+	private IEnumerator preStart()
+	{
+		yield return StartCoroutine(cheeringAnimalManager.Arrive());
+		yield return StartCoroutine(_questManager.NextNumberCoroutine());
+
+		_answerNumberButtonManager.TurnNextNumber(_questManager.NumberCurrent);
 	}
 
 	private void _questManager_ToysAppeared(object sender, EventArgs e)
@@ -58,8 +73,7 @@ public class GameManager : MonoBehaviour, IGameManager
 		if(readyToAnswer && e == _questManager.NumberCurrent)
 		{
 			readyToAnswer = false;
-			StartCoroutine(cheeringAnimalManager.Cheer());
-			StartCoroutine(_questManager.NextNumberCoroutine());
+			StartCoroutine(rightAnswerCoroutine(e));
 		}
 	}
 
@@ -71,6 +85,26 @@ public class GameManager : MonoBehaviour, IGameManager
 	public void StopGame()
 	{
 
+	}
+
+	private IEnumerator rightAnswerCoroutine(int n)
+	{
+		yield return StartCoroutine(cheeringAnimalManager.Cheer(_numbers[n]));
+		yield return StartCoroutine(_questManager.NextNumberCoroutine());
+
+		if (_questManager.MatricesAreOver)
+		{
+			yield return StartCoroutine(endGameCoroutine());
+			GameOver?.Invoke(this, EventArgs.Empty);
+			yield break;
+		}
+
+		_answerNumberButtonManager.TurnNextNumber(_questManager.NumberCurrent);
+	}
+
+	private IEnumerator endGameCoroutine()
+	{
+		yield return StartCoroutine(cheeringAnimalManager.Leave());
 	}
 
 	private IEnumerator startingGameCoroutine()

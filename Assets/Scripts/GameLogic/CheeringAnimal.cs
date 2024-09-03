@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CheeringAnimal : MonoBehaviour, ICheeringAnimal
 {
+	[SerializeField] private TextNumberApproved textApproved;
+
 	[SerializeField] private Animator animator;
 	[SerializeField] private float speed = 4;
 	[SerializeField] private float rotationSpeed = 2;
@@ -28,11 +30,28 @@ public class CheeringAnimal : MonoBehaviour, ICheeringAnimal
 		moving.Speed = speed;
 	}
 
-	public IEnumerator CheerUpCoroutine()
+	public IEnumerator CheerUpCoroutine(string txt)
 	{
+		//animator.SetTrigger("cheer1");
+		//yield return new WaitForSeconds(1.5f);
+		//animator.SetTrigger("idle");
+
+		//for (int i = 0; i < 2; i++)
+		//{
+		//	animator.SetTrigger("cheer1");
+		//	yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+		//	animator.ResetTrigger("cheer1");
+		//	Debug.Log("cheer1");
+		//}
+
 		animator.SetTrigger("cheer1");
-		yield return new WaitForSeconds(1.5f);
-		animator.SetTrigger("idle");
+
+		textApproved.Appear(txt);
+
+		yield return new WaitForSeconds(5);
+
+		textApproved.Disappear();
+		//animator.SetTrigger("idle");
 	}
 
 	public IEnumerator MoveCoroutine(Vector3 toPoint)
@@ -47,5 +66,5 @@ public class CheeringAnimal : MonoBehaviour, ICheeringAnimal
 public interface ICheeringAnimal
 {
 	IEnumerator MoveCoroutine(Vector3 toPoint);
-	IEnumerator CheerUpCoroutine();
+	IEnumerator CheerUpCoroutine(string txt);
 }

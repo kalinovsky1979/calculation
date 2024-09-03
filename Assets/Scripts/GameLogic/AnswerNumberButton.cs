@@ -8,6 +8,8 @@ public class AnswerNumberButton : MonoBehaviour
 	[SerializeField] private AnswerNumberButtonManager answerNumberButtonManager;
 	[SerializeField] private int numberName;
 
+	public int NumberName => numberName;
+
 	private PressGesture pressGesture;
 
 	AnimateVector3 pressingAnim = new AnimateVector3();
@@ -20,8 +22,6 @@ public class AnswerNumberButton : MonoBehaviour
 		pressGesture = GetComponent<PressGesture>();
 		pressGesture.Pressed += PressGesture_Pressed;
 
-		originPosition = transform.position;
-
 		pressingAnim.OnAnimationStep = (x) =>
 		{
 			transform.position = x;
@@ -33,7 +33,7 @@ public class AnswerNumberButton : MonoBehaviour
 	{
 		if(isAnimating) return;
 
-		answerNumberButtonManager.SendNumber(numberName);
+		answerNumberButtonManager.AnswerNumberFromUser(numberName);
 
 		StartCoroutine(pressCoroutine());
 	}
@@ -41,6 +41,8 @@ public class AnswerNumberButton : MonoBehaviour
 	private IEnumerator pressCoroutine()
 	{
 		isAnimating = true;
+
+		originPosition = transform.position;
 
 		pressingAnim.valueA = originPosition;
 		pressingAnim.valueB = new Vector3(originPosition.x, originPosition.y - 0.1f, originPosition.z);
