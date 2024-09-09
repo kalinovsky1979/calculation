@@ -2,12 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnswerNumberButtonManager : MonoBehaviour, IAnswerNumberButtonManager
 {
 	[SerializeField] private AnswerNumberButton[] answerNumberButtons;
-	[SerializeField] private Transform[] buttonPoints;
+	[SerializeField] private Transform pointA;
+	[SerializeField] private Transform pointB;
+
+	private Vector3[] buttonPoints;
 
 	public event EventHandler<int> OnAnswerClicked;
 
@@ -16,6 +20,11 @@ public class AnswerNumberButtonManager : MonoBehaviour, IAnswerNumberButtonManag
 	public void AnswerNumberFromUser(int n)
 	{
 		OnAnswerClicked?.Invoke(this, n);
+	}
+
+	private void Start()
+	{
+		buttonPoints = calculatePointsBetween(pointA.position, pointB.position, 5);
 	}
 
 	public void TurnNextNumber(int n)
@@ -48,7 +57,7 @@ public class AnswerNumberButtonManager : MonoBehaviour, IAnswerNumberButtonManag
 		int iI = 0;
 		foreach (var obj in selectedButtons)
 		{
-			obj.gameObject.transform.position = buttonPoints[iI].position;
+			obj.gameObject.transform.position = buttonPoints[iI];
 			obj.gameObject.SetActive(true);
 			iI++;
 		}
@@ -69,10 +78,29 @@ public class AnswerNumberButtonManager : MonoBehaviour, IAnswerNumberButtonManag
 
 	void OnDrawGizmos()
 	{
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawSphere(pointA.position, 0.4f);
+		Gizmos.DrawSphere(pointB.position, 0.4f);
+
 		Gizmos.color = Color.blue;
 
-		foreach (var obj in buttonPoints)
-			Gizmos.DrawSphere(obj.position, 0.2f);
+		//foreach (var obj in buttonPoints)
+		//	Gizmos.DrawSphere(obj, 0.2f);
+	}
+
+	private Vector3[] calculatePointsBetween(Vector3 a, Vector3 b, int totalPoints)
+	{
+		List<Vector3> res = new List<Vector3>();
+
+		for (int i = 0; i < totalPoints; i++)
+		{
+			float t = (float)i / (totalPoints - 1); // Normalize 'i' between 0 and 1
+			Vector3 pointPosition = Vector3.Lerp(a, b, t);
+
+			res.Add(pointPosition);
+		}
+
+		return res.ToArray();
 	}
 }
 

@@ -16,7 +16,7 @@ public class QuestManager : MonoBehaviour, IQuestManager
 	private bool _matricesAreOver = false;
 
 	private RandomList<GameObject> _toysRandomList;
-	private Queue<ToysMatrix> _toysQueueList;
+	private Queue<ToysMatrix> _toysMatricesQueueList;
 
 	public int NumberCurrent => _toyMatrixCurrent == null ? -1 : _toyMatrixCurrent.NumberName;
 	//private RandomList<ToysMatrix> randomListToysMatrix;
@@ -38,7 +38,9 @@ public class QuestManager : MonoBehaviour, IQuestManager
 	{
 		//printItems(_toysQueueList.ToArray());
 
-		if (_toysQueueList.Count == 0)
+		if(_matricesAreOver) yield break;
+
+		if (_toysMatricesQueueList.Count == 0)
 		{
 			_matricesAreOver = true;
 			if (_toyMatrixCurrent != null)
@@ -55,7 +57,7 @@ public class QuestManager : MonoBehaviour, IQuestManager
 			Destroy(_toyMatrixCurrent.gameObject);
 		}
 
-		_toyMatrixCurrent = Instantiate(_toysQueueList.Dequeue(), toysMatrixPoint);
+		_toyMatrixCurrent = Instantiate(_toysMatricesQueueList.Dequeue(), toysMatrixPoint);
 
 		yield return StartCoroutine(_toyMatrixCurrent.AppearToysCoroutine(_toysRandomList.Next()));
 
@@ -65,10 +67,6 @@ public class QuestManager : MonoBehaviour, IQuestManager
 	private void Awake()
 	{
 		_toysRandomList = new RandomList<GameObject>(toys, false);
-		var _m = new List<ToysMatrix>(toysMatrices).ToArray();
-
-		ShuffleArray(_m);
-		_toysQueueList = new Queue<ToysMatrix>(_m);
 	}
 
 	// Method to shuffle an array using the Fisher-Yates shuffle algorithm
@@ -85,6 +83,14 @@ public class QuestManager : MonoBehaviour, IQuestManager
 			array[n] = value;
 		}
 	}
+
+	public void Restart()
+	{
+		var _m = new List<ToysMatrix>(toysMatrices).ToArray();
+		ShuffleArray(_m);
+		_toysMatricesQueueList = new Queue<ToysMatrix>(_m);
+		_matricesAreOver = false;
+	}
 }
 
 public interface IQuestManager
@@ -93,4 +99,5 @@ public interface IQuestManager
 	IEnumerator NextNumberCoroutine();
 	int NumberCurrent { get; }
 	bool MatricesAreOver { get; }
+	void Restart();
 }

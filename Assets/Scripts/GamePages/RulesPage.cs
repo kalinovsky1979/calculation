@@ -26,8 +26,6 @@ public class RulesPage : MonoBehaviour
 		StartGame?.Invoke(sender, EventArgs.Empty);
 	}
 
-	private bool init = false;
-
 	public void EnterPage(string msg)
 	{
 		msgText.text = msg;

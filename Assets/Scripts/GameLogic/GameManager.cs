@@ -8,6 +8,8 @@ using UnityEngine;
  */
 public class GameManager : MonoBehaviour, IGameManager
 {
+	[SerializeField] private GameMusicManager gameMusicManager;
+
 	[SerializeField] private CheeringAnimalManager cheeringAnimalManager;
 
 	[SerializeField] private QuestManager questManager;
@@ -20,6 +22,8 @@ public class GameManager : MonoBehaviour, IGameManager
 
 	private bool readyToAnswer = true;
 
+	private AudioSource audioSource;
+
 	private Dictionary<int, string> _numbers = new Dictionary<int, string> {
 		{ 0, "zero" }, { 1, "one" }, { 2, "two" }, { 3, "three" }, { 4, "four" }, { 5, "five" },
 		{ 6, "six" }, { 7, "seven" }, { 8, "eight" }, { 9, "nine" }
@@ -27,21 +31,18 @@ public class GameManager : MonoBehaviour, IGameManager
 
 	private void Start()
 	{
-		//var a = new RandomList<CheeringAnimal>(cheeringAnimals).Next();
-		//var i = Instantiate(a, animalRespPoint.position, Quaternion.identity);
-		//_cheeringAnimal = i.GetComponent<CheeringAnimal>();
-
 		_answerNumberButtonManager = answerNumberButtonManager;
 		_answerNumberButtonManager.OnAnswerClicked += _answerNumberButtonManager_OnAnswerClicked;
 
 		_questManager = questManager;
 		_questManager.ToysAppeared += _questManager_ToysAppeared;
 
-		StartCoroutine(preStart());
+		audioSource = GetComponent<AudioSource>();
 	}
 
-	private IEnumerator preStart()
+	private IEnumerator restartCoroutine()
 	{
+		_questManager.Restart();
 		yield return StartCoroutine(cheeringAnimalManager.Arrive());
 		yield return StartCoroutine(_questManager.NextNumberCoroutine());
 
@@ -50,46 +51,37 @@ public class GameManager : MonoBehaviour, IGameManager
 
 	private void _questManager_ToysAppeared(object sender, EventArgs e)
 	{
-		// можно принимать ответ игрока
 		readyToAnswer = true;
 	}
-
-	/*
-	 * Если нужно дождаться два параллельных действия, можно повтаить счетчик задачь, которые должны быть выполнены
-	 * Например две задачи параллелниые
-	 * completedTasksCount = 0
-	 * task A finished : completedTasksCount++
-	 * task B finished : completedTasksCount++
-	 * if(completedTasksCount == 2 && e == _questManager.NumberCurrent)
-	 * 
-	 * или сделать отдельный метод, который возвращает false/true разрешение на прием сл ответа
-	 * 
-	 * Может создать класс-контейнер, в который эти задачи помещаются. Потом он их запускает, и ждет их выполнения.
-	 * - и сообщает клиенту услуги
-	 */
 
 	private void _answerNumberButtonManager_OnAnswerClicked(object sender, int e)
 	{
 		if(readyToAnswer && e == _questManager.NumberCurrent)
 		{
+			audioSource.pitch = UnityEngine.Random.Range(0.7f, 1.2f);
+			audioSource.clip = gameMusicManager.goodHitSoundList.Next();
+			audioSource.Play();
+
 			readyToAnswer = false;
 			StartCoroutine(rightAnswerCoroutine(e));
+		}
+		else if (readyToAnswer && e != _questManager.NumberCurrent)
+		{
+			audioSource.pitch = UnityEngine.Random.Range(0.7f, 1.2f);
+			audioSource.clip = gameMusicManager.badHitSoundList.Next();
+			audioSource.Play();
 		}
 	}
 
 	public void PlayGame()
 	{
-
-	}
-
-	public void StopGame()
-	{
-
+		StartCoroutine(restartCoroutine());
 	}
 
 	private IEnumerator rightAnswerCoroutine(int n)
 	{
 		yield return StartCoroutine(cheeringAnimalManager.Cheer(_numbers[n]));
+
 		yield return StartCoroutine(_questManager.NextNumberCoroutine());
 
 		if (_questManager.MatricesAreOver)
@@ -98,7 +90,6 @@ public class GameManager : MonoBehaviour, IGameManager
 			GameOver?.Invoke(this, EventArgs.Empty);
 			yield break;
 		}
-
 		_answerNumberButtonManager.TurnNextNumber(_questManager.NumberCurrent);
 	}
 

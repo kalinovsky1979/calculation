@@ -9,18 +9,11 @@ public class GameMusicManager : MonoBehaviour
 
 	public float EffectsVolume => effectsVolume;
 	public float MusicVolume => musicVolume;
-
-	//public AudioClip hitBaloon;
-	//public AudioClip goodBaloon;
-	public AudioClip rabbitWalk;
-	//public AudioClip waterWalk;
-
-	//[SerializeField] private AudioClip[] gameMusic;
-	//[SerializeField] private AudioClip[] rabbitEat;
-	//[SerializeField] private AudioClip[] goodHits;
-	//[SerializeField] private AudioClip[] badHits;
-	//[SerializeField] private AudioClip[] waterWalks;
 	
-	public ClipRandomList randomListsBgMusic;
-	public ClipRandomList randomListsHits;
+	public ClipRandomList gameMusicList;
+	public ClipRandomList gameMenuList;
+
+	public ClipRandomList goodHitSoundList;
+	public ClipRandomList badHitSoundList;
+	public ClipRandomList animalCheerSoundList;
 }

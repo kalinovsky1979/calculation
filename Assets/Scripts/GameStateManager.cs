@@ -14,9 +14,11 @@ public class GameStateManager : MonoBehaviour
 
 	[SerializeField] private GameManager gameManager;
 	[SerializeField] private GameMusicManager gameMusicManager;
-	[SerializeField] private CountdownTimer cdTimer;
+	//[SerializeField] private CountdownTimer cdTimer;
 	[SerializeField] private ReadySetGoTimer rsgTimer;
 	[SerializeField] private GameScoresManager gameScoresManager;
+
+	[SerializeField] private string[] greetingTexts;
 
 	[SerializeField] private GameObject preventGaming;
 
@@ -28,17 +30,26 @@ public class GameStateManager : MonoBehaviour
 
 	private int _level;
 
-	private SaveLoadSettings settings = null;
+	//private SaveLoadSettings settings = null;
+
+	private RandomList<string> greetingTextsRandomList;
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		_gameManager = gameManager;
 
-		StartCoroutine(starting());
+		_gameManager.GameOver += _gameManager_GameOver;
+
+		StartCoroutine(firstInitAndStartCoroutine());
 	}
 
-	private IEnumerator starting()
+	private void _gameManager_GameOver(object sender, System.EventArgs e)
+	{
+		StartCoroutine(toFinalPageCoroutine());
+	}
+
+	private IEnumerator firstInitAndStartCoroutine()
 	{
 		yield return new WaitForEndOfFrame();
 
@@ -48,90 +59,99 @@ public class GameStateManager : MonoBehaviour
 		rulesPage.StartGame += RulesPage_StartGame;
 		finalPage.RestartClicked += FinalPage_RestartClicked;
 
-		cdTimer.Expired += CdTimer_Expired;
+		greetingTextsRandomList = new RandomList<string>(greetingTexts, false);
 
-		StartCoroutine(enterRulePage());
+		StartCoroutine(enterRulePageCoroutine());
 	}
-	private IEnumerator enterRulePage()
+	private IEnumerator enterRulePageCoroutine()
 	{
+		preventToGamePage = true;
+
 		darkenPage.DarkenInstantly(1.0f);
 
-		rulesPage.EnterPage($"HIT AS MANY FLIES AS YOU CAN!");
-		gamePage.EnterPage();
+		rulesPage.EnterPage($"Count the number of toys and press the corresponding number");
+		//gamePage.EnterPage();
 
 		yield return new WaitForSeconds(1.0f);
 
 		yield return StartCoroutine(darkenPage.UndarkenScreen(0.7f));
 
-		player.volume = gameMusicManager.MusicVolume;
-		player.clip = gameMusicManager.randomListsBgMusic.Next();
+		yield return new WaitForSeconds(2.0f);
+
+		//player.volume = gameMusicManager.MusicVolume;
+		player.clip = gameMusicManager.gameMenuList.Next();
 		player.Play();
+
+		preventToGamePage = false;
 	}
+
+	private bool preventToGamePage = true;
 
 	private void RulesPage_StartGame(object sender, System.EventArgs e)
 	{
-		StartCoroutine(startGame());
+		if(preventToGamePage) return;
+		StartCoroutine(toGamePageCoroutine());
 	}
 
 	private void FinalPage_RestartClicked(object sender, System.EventArgs e)
 	{
-		StartCoroutine(restartGame());
+		StartCoroutine(toStartPageCoroutine());
 	}
 
-	private void GameManager_GameWin(object sender, System.EventArgs e)
-	{
-		StartCoroutine(toFinalPage());
-	}
+	//private void GameManager_GameWin(object sender, System.EventArgs e)
+	//{
+	//	StartCoroutine(toFinalPageCoroutine());
+	//}
 
-	private IEnumerator startGame()
+	private IEnumerator toGamePageCoroutine()
 	{
 		rulesPage.ExitPage();
 		yield return new WaitForSeconds(0.3f);
-		yield return StartCoroutine(rsgTimer.rsgStarting());
+		//yield return StartCoroutine(rsgTimer.rsgStarting());
 		
+		player.Stop();
+
 		preventGaming.SetActive(false);
 
+		player.clip = gameMusicManager.gameMusicList.Next();
+		player.Play();
+
 		_gameManager.PlayGame();
-		cdTimer.Go();
 	}
 
-	private IEnumerator restartGame()
+	private IEnumerator toStartPageCoroutine()
 	{
+		preventToGamePage = true;
+
 		player.Stop();
 		yield return StartCoroutine(darkenPage.DarkenScreen(1.0f, 0.7f));
 
-		gameScoresManager.ResetScores();
+		//gameScoresManager.ResetScores();
 
 		gamePage.EnterPage();
 		finalPage.ExitPage();
-		rulesPage.EnterPage($"HIT AS MANY FLIES AS YOU CAN!");
+		rulesPage.EnterPage($"Count the number of toys and press the corresponding number");
 
 		preventGaming.SetActive(true);
 
 		yield return new WaitForSeconds(0.5f);
 		yield return StartCoroutine(darkenPage.UndarkenScreen(0.7f));
 
-		player.clip = gameMusicManager.randomListsBgMusic.Next();
+		yield return new WaitForSeconds(2.0f);
+
+		player.clip = gameMusicManager.gameMenuList.Next();
 		player.Play();
+
+		preventToGamePage = false;
 	}
 
-	private IEnumerator toFinalPage()
+	private IEnumerator toFinalPageCoroutine()
 	{
 		yield return new WaitForSeconds(1.5f);
 
-		cdTimer.StopTimer();
-		_gameManager.StopGame();
-
 		gamePage.ExitPage();
 
-		finalPage.GreatingText($"BRILLIANT! YOU HIT {gameScoresManager.Scores} FLIES!!!");
+		finalPage.GreatingText(greetingTextsRandomList.Next());
 		finalPage.EnterPage();
-	}
-
-	private void CdTimer_Expired(object sender, System.EventArgs e)
-	{
-		// final of game
-
-		StartCoroutine(toFinalPage());
 	}
 }

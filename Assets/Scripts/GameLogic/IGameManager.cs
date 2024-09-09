@@ -6,5 +6,5 @@ using UnityEngine;
 public interface IGameManager
 {
 	void PlayGame();
-	void StopGame();
+	event EventHandler GameOver;
 }

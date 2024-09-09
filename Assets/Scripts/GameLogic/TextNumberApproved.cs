@@ -16,6 +16,14 @@ public class TextNumberApproved : MonoBehaviour
 
 	public void Appear(string txt)
 	{
+		// Make the object look at the main camera
+		transform.LookAt(Camera.main.transform);
+
+		// Optional: If you want to only rotate along a specific axis (e.g., Y axis)
+		Vector3 direction = Camera.main.transform.position - transform.position;
+		direction.y = 0; // Zero out the Y-axis to avoid tilting
+		transform.rotation = Quaternion.LookRotation(direction);
+
 		textNumberTMP.text = txt;
 		animator.SetTrigger("appear");
 	}

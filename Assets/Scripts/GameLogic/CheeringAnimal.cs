@@ -32,18 +32,6 @@ public class CheeringAnimal : MonoBehaviour, ICheeringAnimal
 
 	public IEnumerator CheerUpCoroutine(string txt)
 	{
-		//animator.SetTrigger("cheer1");
-		//yield return new WaitForSeconds(1.5f);
-		//animator.SetTrigger("idle");
-
-		//for (int i = 0; i < 2; i++)
-		//{
-		//	animator.SetTrigger("cheer1");
-		//	yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-		//	animator.ResetTrigger("cheer1");
-		//	Debug.Log("cheer1");
-		//}
-
 		animator.SetTrigger("cheer1");
 
 		textApproved.Appear(txt);
@@ -61,10 +49,16 @@ public class CheeringAnimal : MonoBehaviour, ICheeringAnimal
 		while(moving.update(null))
 			yield return null;
 	}
+
+	public void KillSelf()
+	{
+		Destroy(gameObject);
+	}
 }
 
 public interface ICheeringAnimal
 {
 	IEnumerator MoveCoroutine(Vector3 toPoint);
 	IEnumerator CheerUpCoroutine(string txt);
+	void KillSelf();
 }
