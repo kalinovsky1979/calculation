@@ -57,11 +57,16 @@ public class AnswerNumberButtonManager : MonoBehaviour, IAnswerNumberButtonManag
 		int iI = 0;
 		foreach (var obj in selectedButtons)
 		{
-			obj.gameObject.transform.position = buttonPoints[iI];
-			obj.gameObject.SetActive(true);
+			//obj.gameObject.transform.position = buttonPoints[iI];
+			//obj.gameObject.SetActive(true);
+			obj.TurnOn(buttonPoints[iI]);
 			iI++;
 		}
 	}
+
+	//private bool _isAwaitingForAnswer = true;
+
+	//public bool IsAwaitingForAnswer => _isAwaitingForAnswer;
 
 	private void clearSelectedButtons()
 	{
@@ -69,7 +74,8 @@ public class AnswerNumberButtonManager : MonoBehaviour, IAnswerNumberButtonManag
 		{
 			foreach (var obj in selectedButtons)
 			{
-				obj.gameObject.SetActive(false);
+				//obj.gameObject.SetActive(false);
+				obj.TurnOff();
 			}
 
 			selectedButtons.Clear();

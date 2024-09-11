@@ -21,6 +21,12 @@ public class AnimateVector3 : StaticStepBase
 		throw new NotImplementedException();
 	}
 
+	public void Reset()
+	{
+//		currentValue = valueA;
+		isAnimating = false;
+	}
+
 	public override bool update(ChainRunner prg)
 	{
 		if (!isAnimating)

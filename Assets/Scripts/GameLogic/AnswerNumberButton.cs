@@ -28,6 +28,7 @@ public class AnswerNumberButton : MonoBehaviour
 		};
 	}
 
+	private Coroutine pressCoroutineVar;
 	private bool isAnimating = false;
 	private void PressGesture_Pressed(object sender, System.EventArgs e)
 	{
@@ -35,7 +36,26 @@ public class AnswerNumberButton : MonoBehaviour
 
 		answerNumberButtonManager.AnswerNumberFromUser(numberName);
 
-		StartCoroutine(pressCoroutine());
+		pressCoroutineVar = StartCoroutine(pressCoroutine());
+	}
+
+	public void TurnOn(Vector3 pos)
+	{
+		transform.position = pos;
+		isAnimating = false;
+		gameObject.SetActive(true);
+	}
+
+	public void TurnOff()
+	{
+		if (pressCoroutineVar != null)
+			StopCoroutine(pressCoroutineVar);
+
+		pressCoroutineVar = null;
+
+		pressingAnim.Reset();
+
+		gameObject.SetActive(false);
 	}
 
 	private IEnumerator pressCoroutine()
